@@ -16,14 +16,18 @@ def main():
 
     elements = soup.find_all(class_='footable')
 
-    for element in elements:
-        single_day = element.get_text(strip=False)
-        generate_days_schedule(single_day)
+    # for element in elements:
+    single_day = elements[0].get_text(strip=False)
+    generate_days_schedule(single_day, classdict)
 
 
-def generate_days_schedule(single_day):
+def generate_days_schedule(single_day, classdict):
+    lines = single_day.splitlines()
+    for i, line in enumerate(lines):
+        if line == '8:30 a.m.':
+            if i+2 < len(lines) and lines[i+1] == 'Tuesday/Thursday (TR)':
+                print(lines[i+2])
 
-    print(single_day)
     return 0
 
 if __name__ == '__main__':
