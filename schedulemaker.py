@@ -3,12 +3,12 @@ from bs4 import BeautifulSoup
 import csv
 
 def main():
-    classdict = []
-    finalsdict = []
+    classes = []
+    finals = []
     with open('classschedule.csv', newline='') as classschedule:
         spamreader = csv.DictReader(classschedule, delimiter=',')
         for row in spamreader:
-            classdict.append(row)
+            classes.append(row)
 
     r = requests.get('https://www.unr.edu/admissions/records/academic-calendar/finals-schedule')
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -16,23 +16,23 @@ def main():
     elements = soup.find_all(class_='footable')
 
     for element in elements:
-        single_day = element.get_text(strip=False)
-        generate_days_schedule(single_day, classdict, finalsdict)
-    writefile(finalsdict)
+        isolated_date = element.get_text(strip=False)
+        find_matching_dates(isolated_date, classes, finals)
+    writefile(finals)
 
-def generate_days_schedule(single_day, classdict, finalsdict):
-        lines = single_day.splitlines()
+def find_matching_dates(isolated_date, classes, finals):
+        lines = isolated_date.splitlines()
         for i, line in enumerate(lines):
-            for classinfo in classdict:
+            for classinfo in classes:
                 if classinfo['StartingTime'] in line:
                     if i+2 < len(lines) and classinfo['DayOfWeek'] in lines[i+1]:
-                        finalsdict.append([classinfo['Class'],lines[0].strip(),lines[i+2].strip()])
+                        finals.append([classinfo['Class'],lines[0].strip(),lines[i+2].strip()])
 
-def writefile(finalsdict):
+def writefile(finals):
     with open('finalsschedule.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         writer.writerow(['Class', 'Day', 'Time'])
-        writer.writerows(finalsdict)
+        writer.writerows(finals)
 
 if __name__ == '__main__':
     main()
