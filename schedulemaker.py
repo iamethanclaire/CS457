@@ -15,7 +15,6 @@ def main():
 
     elements = soup.find_all(class_='footable')
 
-    #UNCOMMENT THIS WHEN READY TO MAKE FULL SCHEDULE
     for element in elements:
         single_day = element.get_text(strip=False)
         generate_days_schedule(single_day, classdict, finalsdict)
